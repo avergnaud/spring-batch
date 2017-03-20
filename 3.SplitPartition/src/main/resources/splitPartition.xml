@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<import resource="applicationContext.xml" />
+	<import resource="splitterBeans.xml" />
+	<import resource="partitionerBeans.xml" />
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>app.properties</value>
+		</property>
+	</bean>
+
+	<batch:job id="splitPartitionJob" job-repository="jobRepository">
+		<batch:step id="step1" next="step2">
+			<batch:tasklet>
+				<batch:chunk reader="splitItemReader" writer="splitItemWriter"
+					commit-interval="${commit.interval}" />
+			</batch:tasklet>
+		</batch:step>
+		<batch:step id="step2">
+			<batch:partition step="step2Partition" partitioner="partitioner">
+				<batch:handler task-executor="partitionTaskExecutor" />
+			</batch:partition>
+		</batch:step>
+	</batch:job>
+
+	<step id="step2Partition" xmlns="http://www.springframework.org/schema/batch">
+		<tasklet transaction-manager="transactionManager">
+			<chunk writer="partitionItemWriter" reader="partitionItemReader"
+				processor="partitionItemProcessor" commit-interval="${commit.interval}" /> 
+		</tasklet>
+	</step>
+
+</beans>

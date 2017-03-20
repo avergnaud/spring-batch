@@ -1,0 +1,26 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+	</bean>
+
+	<!-- 
+	Spring's PlatformTransactionManager that will be used to begin and commit transactions during processing.
+	A step reads in and writes out items, periodically committing using the supplied PlatformTransactionManager.
+	> commit-interval (combien de fois on appelle le reader et le processor avant d'appeler le writer)
+	Mais ici dans helloWorldJob.xml on a pas de chunk : "Each call to the Tasklet is wrapped in a transaction"
+	http://docs.spring.io/spring-batch/reference/html/configureStep.html#taskletStep
+	 -->
+	<bean id="transactionManager"
+		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+
+	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+
+</beans>

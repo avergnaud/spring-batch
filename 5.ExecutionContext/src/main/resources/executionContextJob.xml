@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <description>
+        Simple inter step communication example with:        
+            * 2 Taskletsteps
+            * ExecutionContextPromotionListener which promotes the StepExecutionContext
+              data from the first step
+                * configured strict=true to force checking for the correct value name
+    </description>
+
+	<import resource="setup/applicationContext.xml" />
+
+	<job id="executionContextJob" xmlns="http://www.springframework.org/schema/batch">
+		<step id="step1" next="step2">
+			<tasklet ref="changingStepExecutionContextTasklet" />
+            <listeners>
+                <listener ref="promotionListener"/>
+            </listeners>
+		</step>
+        <step id="step2">
+            <tasklet ref="readingJobExecutionContextTasklet" />
+        </step>
+	</job>
+
+	<bean id="changingStepExecutionContextTasklet" class="com.catamania.ChangingStepExecutionContextTasklet" />
+	
+    <bean id="promotionListener" class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
+          <property name="strict" value="true" />
+          <property name="keys" value="cle" />
+     </bean>
+          
+    <bean id="readingJobExecutionContextTasklet" 
+          class="com.catamania.ReadingJobExecutionContextTasklet" />
+
+</beans>
