@@ -8,12 +8,18 @@
 	">
 
 	<import resource="applicationContext.xml" />
+	
+	<bean
+    id="jobParametersIncrementer"
+    class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
 
-	<batch:job id="helloWorldJob" job-repository="jobRepository">
-		<batch:step id="step1">
+	<batch:job id="restartableJobTest" job-repository="jobRepository"
+		 incrementer="jobParametersIncrementer"
+		 restartable="true">
+		<batch:step id="restartableStep1">
 			<batch:tasklet>
 				<batch:chunk reader="itemReader" writer="itemWriter"
-					commit-interval="10" />
+					commit-interval="1" />
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>

@@ -1,10 +1,11 @@
 package com.catamania;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.UnexpectedJobExecutionException;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.JobParametersNotFoundException;
+import org.springframework.batch.core.launch.NoSuchJobException;
+import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -14,20 +15,29 @@ public class App {
 	
 	public static void main(String[] args) {
 
-		String[] springConfig = { "helloWorldJob.xml" };
-
+		String[] springConfig = { "SimpleJob.xml" };
+		
 		try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(springConfig);) {
 			
-			JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
+//			JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
 			
-			Job job = (Job) context.getBean("helloWorldJob");
+			JobOperator jobOperator = (JobOperator) context.getBean("jobOperator");
+			
+//			Job job = (Job) context.getBean("restartableJobTest");
 
-			JobExecution execution = jobLauncher.run(job, new JobParameters());
-			System.out.println("[App.main                 ] Exit Status : " + execution.getStatus());
-
-		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
-				| JobParametersInvalidException e) {
+//			JobExecution execution = jobLauncher.run(job, new JobParameters());
+			
+			Long l = null;
+				
+			l = jobOperator.startNextInstance("restartableJobTest");
+			
+			System.out.println("### jobExecutio id " + l);
+			
+		}  catch (NoSuchJobException | JobParametersNotFoundException | JobRestartException
+				| JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException
+				| UnexpectedJobExecutionException | JobParametersInvalidException e) {
+			/* Spring-Batch exceptions */
 			e.printStackTrace();
-		}
+		} 
 	}
 }

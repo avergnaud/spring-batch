@@ -8,8 +8,14 @@
 	">
 
 	<import resource="applicationContext.xml" />
+	
+	<!-- restartable... -->
+	<bean
+    id="jobParametersIncrementer"
+    class="org.springframework.batch.core.launch.support.RunIdIncrementer" />
 
-	<batch:job id="simpleJob" job-repository="jobRepository">
+	<batch:job id="simpleJob" job-repository="jobRepository" 
+		incrementer="jobParametersIncrementer">
 		<batch:step id="step1">
 			<batch:tasklet>
 				<batch:chunk reader="itemReader" writer="itemWriter"
