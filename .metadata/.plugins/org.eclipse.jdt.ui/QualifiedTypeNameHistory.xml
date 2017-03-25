@@ -2,4 +2,8 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="org.springframework.util.StringUtils"/>
 <fullyQualifiedTypeName name="org.springframework.batch.repeat.RepeatStatus"/>
+<fullyQualifiedTypeName name="org.springframework.batch.item.ItemStream"/>
+<fullyQualifiedTypeName name="org.springframework.batch.core.launch.JobOperator"/>
+<fullyQualifiedTypeName name="java.lang.RuntimeException"/>
+<fullyQualifiedTypeName name="org.springframework.batch.item.ItemReader"/>
 </qualifiedTypeNameHistroy>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="itemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+
+		<property name="resource" value="classpath:input_data.csv" />
+
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<property name="lineTokenizer">
+					<bean
+						class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="names" value="firstName,lastName" />
+					</bean>
+				</property>
+				<property name="fieldSetMapper">
+					<bean
+						class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+						<property name="targetType" value="com.catamania.Person" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+
+	</bean>
+
+	<bean id="itemProcessor" class="com.catamania.chunk.MonProcessor" scope="step" />
+	
+	<bean id="itemWriter" class="com.catamania.chunk.DummyItemWriter" scope="step">
+	</bean>
+
+	<!-- listeners -->
+	<bean id="readListener" class="com.catamania.listeners.ReadListener" />
+	<bean id="processListener" class="com.catamania.listeners.ProcessListener" />
+	<bean id="writeListener" class="com.catamania.listeners.WriteListener" />
+
+</beans>
